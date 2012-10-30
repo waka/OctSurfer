@@ -9,5 +9,5 @@
 #import "AbstractViewController.h"
 
 
-@interface ProfileViewController : AbstractViewController
+@interface ProfileViewController : AbstractViewController <UITableViewDelegate, UITableViewDataSource>
 @end

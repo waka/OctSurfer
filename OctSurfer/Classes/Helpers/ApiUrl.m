@@ -24,16 +24,23 @@ NSString * const GitHubApiURL = @"https://api.github.com/";
     return url;
 }
 
-+ (NSString *) searchRepository: (NSString *)keyword
+
++ (NSString *) repositorySearch: (NSString *)keyword
 {
     NSString *path = [NSString stringWithFormat: @"legacy/repos/search/%@", keyword];
     return [ApiUrl api: path];
 }
 
-+ (NSString *) masterBranch: (NSString *) owner repository: (NSString *)repo
++ (NSString *) userSearch: (NSString *)keyword
+{
+    NSString *path = [NSString stringWithFormat: @"legacy/user/search/%@", keyword];
+    return [ApiUrl api: path];
+}
+
++ (NSString *) masterBranch: (NSString *) owner repository: (NSString *)repo calling: (BOOL)calling
 {
     NSString *path = [NSString stringWithFormat: @"repos/%@/%@/branches/master", owner, repo];
-    return [ApiUrl api: path];
+    return (calling) ? [ApiUrl api: path] : path;
 }
 
 + (NSString *) blob: (NSString *) owner repository: (NSString *)repo sha: (NSString *)sha
@@ -42,16 +49,34 @@ NSString * const GitHubApiURL = @"https://api.github.com/";
     return [ApiUrl api: path];
 }
 
-+ (NSString *) starredRepository
-{
-    NSString *path = @"user/starred";
-    return [ApiUrl api: path];
-}
-
-+ (NSString *) authenticatedUser
++ (NSString *) authenticatedUser: (BOOL) calling
 {
     NSString *path = @"user";
-    return [ApiUrl api: path];
+    return (calling) ? [ApiUrl api: path] : path;
+}
+
++ (NSString *) authenticatedUserStarred: (BOOL) calling
+{
+    NSString *path = @"user/starred";
+    return (calling) ? [ApiUrl api: path] : path;
+}
+
++ (NSString *) authenticatedUserOrganizations: (BOOL) calling
+{
+    NSString *path = @"user/orgs";
+    return (calling) ? [ApiUrl api: path] : path;
+}
+
++ (NSString *) orgRepositories: (NSString *) org calling: (BOOL) calling
+{
+    NSString *path = [NSString stringWithFormat: @"orgs/%@/repos", org];
+    return (calling) ? [ApiUrl api: path] : path;
+}
+
++ (NSString *) starred: (NSString *) owner repository: (NSString *)repo calling: (BOOL) calling
+{
+    NSString *path = [NSString stringWithFormat: @"user/starred/%@/%@", owner, repo];
+    return (calling) ? [ApiUrl api: path] : path;
 }
 
 @end

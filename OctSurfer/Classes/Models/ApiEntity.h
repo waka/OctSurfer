@@ -12,9 +12,8 @@
 @interface ApiEntity : NSManagedObject
 
 @property (nonatomic, strong) NSString *identifier;
-@property (nonatomic, strong) NSString *type;
-@property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *url;
+@property (nonatomic, strong) NSString *path;
 @property (nonatomic, strong) NSDictionary *content;
 
 @end

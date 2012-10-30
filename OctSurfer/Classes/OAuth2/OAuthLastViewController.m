@@ -13,6 +13,7 @@
 #import "AppConfig.h"
 #import "CCColor.h"
 #import "CCHttpClient.h"
+#import "SVProgressHUD.h"
 
 
 @interface OAuthLastViewController ()
@@ -41,25 +42,33 @@
     [self.view.layer insertSublayer: gradient atIndex: 0];
     
     CCHttpClient *client = [CCHttpClient clientWithUrl: ACCESS_TOKEN_URL];
-    client.params = @{@"client_id": CLIENT_ID, @"client_secret": CLIENT_SECRET, @"code": self.code};
-    [client postWithDelegate: self
-                     success: @selector(handleGetAccessTokenSuccess:)
-                     failure: @selector(handleGetAccessTokenFailure:)];
+    NSDictionary *params = @{@"client_id": CLIENT_ID, @"client_secret": CLIENT_SECRET, @"code": self.code};
+    [client postWithDelegate: params
+                     headers: @{@"application/json": @"Accept"}
+                    delegate: self
+                     success: @selector(handleGetAccessTokenSuccess:result:)
+                     failure: @selector(handleGetAccessTokenFailure:error:)];
 }
 
-- (void) handleGetAccessTokenSuccess: (NSDictionary *)json
+- (void) handleGetAccessTokenSuccess: (NSHTTPURLResponse *)response result: (NSData *)result
 {
+    NSDictionary *json = [CCHttpClient responseJSON: result];
     NSString *accessToken = json[@"access_token"];
     
     // Save access token
     AuthEntity *auth = [[CoreDataManager sharedManager] insertNewAuth];
     auth.accessToken = accessToken;
     
+    // Save memory because still not saved in CoreData
+    [AppConfig set: @"accessToken" value: accessToken];
+    [[CoreDataManager sharedManager] save];
+    
     [self dismissModalViewControllerAnimated: YES];
 }
 
-- (void) handleGetAccessTokenFailure: (NSError *)error
+- (void) handleGetAccessTokenFailure: (NSHTTPURLResponse *)response error: (NSError *)error
 {
+    [SVProgressHUD showErrorWithStatus: @"Failed to get access token, please retry."];
     [self.navigationController popToRootViewControllerAnimated: NO];
 }
 

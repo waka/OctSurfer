@@ -6,6 +6,7 @@
 //
 
 #import "AppDelegate.h"
+#import "MigrationViewController.h"
 #import "TabBarViewController.h"
 #import "CoreDataManager.h"
 #import "CCColor.h"
@@ -19,35 +20,69 @@
     self.window.frame = [[UIScreen mainScreen] bounds];
     self.window.backgroundColor = [CCColor hexToUIColor: @"F8F8F8" alpha: 1.0];
     
-    // Add tabbar, this controller is each view router
-    UITabBarController *tabBarController = [[TabBarViewController alloc] init];
-    self.window.rootViewController = tabBarController;
+    // Color defined
+    [[UINavigationBar appearance] setTintColor: [UIColor grayColor]];
+    
+    if ([[CoreDataManager sharedManager] isRequiredMigration]) {
+        [self startMigration];
+    } else {
+        [self startApplication];
+    }
     
     [self.window makeKeyAndVisible];
     return YES;
 }
 
+- (void) startMigration
+{
+    MigrationViewController *migrationController = [[MigrationViewController alloc] init];
+    migrationController.delegate = self;
+    self.window.rootViewController = migrationController;
+}
+
+- (void) migrationDidFinish
+{
+    [UIView beginAnimations: nil context: nil];
+    [UIView setAnimationDuration: 0.5];
+    [UIView setAnimationCurve: UIViewAnimationCurveLinear];
+    [UIView setAnimationDelegate: self];
+    [UIView setAnimationDidStopSelector: @selector(didMigrationViewAnimationFinished:finished:context:)];
+    self.window.rootViewController.view.alpha = 0.0;
+    [UIView commitAnimations];
+}
+
+- (void) didMigrationViewAnimationFinished: (NSString *)animation finished: (BOOL)finished context: (void *)context
+{
+    [self startApplication];
+}
+
+- (void) startApplication
+{
+    // Add tabbar, this controller is each view router
+    UITabBarController *tabBarController = [[TabBarViewController alloc] init];
+    self.window.rootViewController = tabBarController;
+}
+
 - (void) applicationDidEnterBackground: (UIApplication *)application
 {
-    [self saveContext];
+    [[CoreDataManager sharedManager] save];
+    [self deleteCookie];
 }
 
-- (void) applicationWillTerminate:(UIApplication *)application
+- (void) applicationWillTerminate: (UIApplication *)application
 {
-    [self saveContext];
+    [[CoreDataManager sharedManager] save];
+    [self deleteCookie];
 }
 
-- (void) saveContext
+- (void) deleteCookie
 {
-    NSError *error = nil;
-    NSManagedObjectContext *managedObjectContext = [[CoreDataManager sharedManager] getManagedObjectContext];
-    if (managedObjectContext != nil) {
-        if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
-            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
-            abort();
-        }
-    }
+    NSHTTPCookieStorage *cookieStrage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+	for (id obj in [cookieStrage cookies]) {
+		[cookieStrage deleteCookie:obj];
+	}
 }
+
 
 /**
  * Application scheme is only used for getting OAuth2 access token.

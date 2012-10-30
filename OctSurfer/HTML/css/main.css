@@ -3,9 +3,21 @@
 body {
   margin: 0;
   padding: 0;
+}
+
+body.obsidian {
   background-color: #22282a;
+}
+
+body.github {
+  background-color: #f8f8f8;
 }
 
 pre {
   margin: 0;
+}
+
+.github pre,
+.github pre code {
+  font-size: 14px;
 }

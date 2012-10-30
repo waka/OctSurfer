@@ -8,5 +8,18 @@
 #import <UIKit/UIKit.h>
 
 
-@interface AbstractViewController : UIViewController
+@interface AbstractViewController : UIViewController <UIGestureRecognizerDelegate>
+
+@property (nonatomic, assign) BOOL hiddenTabBar;
+
+- (void) showLogin: (BOOL)animated;
+
+- (void) setScrollGesture: (UIView *)view;
+- (void) handleTap: (id)sender;
+- (void) scrollViewWillBeginDragging: (UIScrollView *)scrollView;
+- (void) pushToNavigationController: (UIViewController *)controller;
+
+- (void) showTabBar: (BOOL)animated;
+- (void) hideTabBar: (BOOL)animated;
+
 @end

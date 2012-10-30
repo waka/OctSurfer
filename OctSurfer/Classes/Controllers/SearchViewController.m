@@ -11,6 +11,7 @@
 #import "CCHttpClient.h"
 #import "RepositoryViewController.h"
 #import "RepositoryCell.h"
+#import "SVProgressHUD.h"
 
 
 @interface SearchViewController ()
@@ -27,25 +28,24 @@
 {
     self = [super init];
     if (self) {
-        _repositories = @[];
     }
     return self;
 }
 
 - (void) viewDidLoad
 {
-    [super viewDidLoad];
-    
     CGRect bounds = [[UIScreen mainScreen] applicationFrame];
     
     // Add searchbar
     UISearchBar *searchBar = [[UISearchBar alloc]
                               initWithFrame: CGRectMake(0.0, 0.0, bounds.size.width, 48.0)];
-    searchBar.showsCancelButton = YES;
+    searchBar.showsCancelButton = NO;
+    searchBar.tintColor = [UIColor grayColor];
     searchBar.placeholder = @"Input repository name";
     searchBar.keyboardType = UIKeyboardTypeASCIICapable;
     searchBar.delegate = self;
     [self.view addSubview: searchBar];
+    //[self setScrollGesture: searchBar];
     
     // Add tableview
     UITableView *tableView = [[UITableView alloc]
@@ -53,6 +53,7 @@
                                                         bounds.size.width, bounds.size.height - 48.0)];
     tableView.rowHeight = 60;
     tableView.scrollEnabled = YES;
+    tableView.showsVerticalScrollIndicator = NO;
     tableView.contentInset = UIEdgeInsetsMake(0, 0, 100, 0);
     tableView.delegate = self;
     tableView.dataSource = self;
@@ -61,23 +62,8 @@
     // Set self property
     self.title = @"Search";
     self.tableView = tableView;
-}
-
-
-#pragma mark - Table view delegate
-
-- (void) tableView: (UITableView *)tableView didSelectRowAtIndexPath: (NSIndexPath *)indexPath
-{
-    // Navigation logic may go here. Create and push another view controller.
-    // Pass the selected object to the new view controller.
-    // [self.navigationController pushViewController:detailViewController animated:YES];
-    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    RepositoryViewController *repositoryView = [[RepositoryViewController alloc] init];
-    NSDictionary *data = (self.repositories)[indexPath.row];
-    repositoryView.name = data[@"name"];
-    repositoryView.owner = data[@"owner"];
-    [self.navigationController pushViewController: repositoryView animated: YES];
+    [super viewDidLoad];
 }
 
 - (void) viewWillAppear: (BOOL)animated
@@ -93,10 +79,28 @@
 
 - (void) viewDidAppear: (BOOL)animated
 {
-    [super viewDidAppear:animated];
+    [super viewDidAppear: animated];
     
 	//	The scrollbars won't flash unless the tableview is long enough.
 	[self.tableView flashScrollIndicators];
+}
+
+
+#pragma mark - Table view delegate
+
+- (void) tableView: (UITableView *)tableView didSelectRowAtIndexPath: (NSIndexPath *)indexPath
+{
+    // Navigation logic may go here. Create and push another view controller.
+    // Pass the selected object to the new view controller.
+    // [self.navigationController pushViewController:detailViewController animated:YES];
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    RepositoryViewController *repositoryController = [[RepositoryViewController alloc] init];
+    NSDictionary *data = (self.repositories)[indexPath.row];
+    repositoryController.name = data[@"name"];
+    repositoryController.owner = data[@"owner"];
+    
+    [self pushToNavigationController: repositoryController];
 }
 
 
@@ -148,6 +152,22 @@
 
 #pragma mark - Search bar delegate
 
+- (BOOL) searchBarShouldBeginEditing: (UISearchBar *)searchBar {
+    searchBar.showsScopeBar = YES;
+    [searchBar sizeToFit];
+    [searchBar setShowsCancelButton: YES animated: YES];
+    
+    return YES;
+}
+
+- (BOOL) searchBarShouldEndEditing: (UISearchBar *)searchBar {
+    searchBar.showsScopeBar = NO;
+    [searchBar sizeToFit];
+    [searchBar setShowsCancelButton: NO animated: YES];
+    
+	return YES;
+}
+
 // Tap search
 - (void) searchBarSearchButtonClicked: (UISearchBar *)searchBar
 {
@@ -170,17 +190,26 @@
 // Go search
 - (void) doSearch: (NSString *)keyword
 {
-    NSString *url = [ApiUrl searchRepository: keyword];
+    NSString *url = [ApiUrl repositorySearch: keyword];
     CCHttpClient *client = [CCHttpClient clientWithUrl: url];
-    [client getJsonWithDelegate: self success: @selector(handleDoSearchSuccess:) failure: nil];
+    [client getJsonWithDelegate: nil
+                        headers: nil
+                       delegate: self
+                        success: @selector(handleDoSearchSuccess:result:)
+                        failure: @selector(handleDoSearchFailure:error:)];
 }
 
-- (void) handleDoSearchSuccess: (NSDictionary *)json
+- (void) handleDoSearchSuccess: (NSHTTPURLResponse *) res result: (NSData *)result
 {
-    NSArray *repositories = json[@"repositories"];
+    NSArray *repositories = [CCHttpClient responseJSON: result][@"repositories"];
     NSPredicate *predicate = [NSPredicate predicateWithFormat: @"fork == 0"];
     self.repositories = [repositories filteredArrayUsingPredicate: predicate];
     [self.tableView reloadData];
+}
+
+- (void) handleDoSearchFailure: (NSHTTPURLResponse *) res error: (NSError *)error
+{
+    [SVProgressHUD showErrorWithStatus: @"Search error, please retry."];
 }
 
 @end

@@ -7,8 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+
 @interface BlobTreeCell : UITableViewCell
 
 @property (nonatomic, strong) UILabel *nameLabel;
+- (void) update: (NSString *)name type: (NSString *)type;
 
 @end

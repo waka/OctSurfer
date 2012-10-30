@@ -10,36 +10,55 @@
 
 @interface CCHttpClient : NSObject
 
-#pragma mark Properties
-
-@property (nonatomic, strong) NSString *url;
-@property (nonatomic, strong) NSDictionary *params;
-
-#pragma mark Class methods
+#pragma mark Initialize methods
 
 + (id) clientWithUrl: (NSString *)url;
+- (id) initWithUrl: (NSString *)url;
+
+
+#pragma mark Utility methods
 
 + (NSString *) urlEncode: (id)obj;
 + (NSString *) makeQuerystringFromDictionary: (NSDictionary *)dict;
++ (id) responseJSON: (NSData *)data;
+
 
 #pragma mark Instance methods
 
-- (id) initWithUrl: (NSString *)url;
-
-- (void) getWithDelegate: (id)target
+- (void) getWithDelegate: (NSDictionary *)params
+                 headers: (NSDictionary *)headers
+                 delegate: (id)target
                  success: (SEL)successSelector
                  failure: (SEL)failureSelector;
 
-- (void) getJsonWithDelegate: (id)target
+// JSONを"GET"したいとき
+- (void) getJsonWithDelegate: (NSDictionary *)params
+                     headers: (NSDictionary *)headers
+                    delegate: (id)target
                      success: (SEL)successSelector
                      failure: (SEL)failureSelector;
 
-- (void) postWithDelegate: (id)target
+- (void) postWithDelegate: (NSDictionary *)params
+                  headers: (NSDictionary *)headers
+                 delegate: (id)target
                   success: (SEL)successSelector
                   failure: (SEL)failureSelector;
 
-- (void) postJsonWithDelegate: (id)target
+// JSONを"POST"したいとき
+- (void) postJsonWithDelegate: (NSDictionary *)params
+                      headers: (NSDictionary *)headers
+                     delegate: (id)target
                       success: (SEL)successSelector
                       failure: (SEL)failureSelector;
+
+- (void) putWithDelegate: (NSDictionary *)headers
+                delegate: (id)target
+                 success: (SEL)successSelector
+                 failure: (SEL)failureSelector;
+
+- (void) deleteWithDelegate: (NSDictionary *)headers
+                   delegate: (id)target
+                    success: (SEL)successSelector
+                    failure: (SEL)failureSelector;
 
 @end

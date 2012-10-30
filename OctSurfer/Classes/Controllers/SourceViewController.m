@@ -7,14 +7,19 @@
 
 #import "SourceViewController.h"
 #import "RepositoryInfoView.h"
+#import "ApiCache.h"
+#import "ApiUrl.h"
+#import "AppConfig.h"
 #import "CCBase64.h"
 #import "FileTypes.h"
 #import "CCHttpClient.h"
+#import "SVProgressHUD.h"
 
 
 @interface SourceViewController ()
 
 @property (nonatomic, weak) UIWebView *webView;
+@property (nonatomic, assign) BOOL forceUpdate;
 
 @end
 
@@ -40,10 +45,14 @@
     UIWebView *webView = [[UIWebView alloc]
                           initWithFrame: CGRectMake(0, 0, bounds.size.width, bounds.size.height)];
     webView.scalesPageToFit = NO;
+    webView.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
+    webView.delegate = self;
+    webView.scrollView.delegate = self;
     [self.view addSubview: webView];
     
-    NSString *path = [[NSBundle mainBundle] pathForResource: @"source" ofType: @"html"];
-    [webView loadRequest: [NSURLRequest requestWithURL: [NSURL fileURLWithPath: path]]];
+    //UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc] initWithTarget: self action: @selector(handleTap:)];
+    //tapGesture.delegate=self;
+    //[webView addGestureRecognizer: tapGesture];
     
     // Set self property
     self.title = self.name;
@@ -53,32 +62,71 @@
                                               action: @selector(handleRefreshClicked:)];
     self.webView = webView;
     
-    [self getContent];
+    [self getContent: NO];
+}
+
+- (BOOL) gestureRecognizer: (UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer: (UIGestureRecognizer *)otherGestureRecognizer
+{
+    return YES;
 }
 
 - (void) handleRefreshClicked: (id)sender
 {
-    [self getContent];
+    [self getContent: YES];
 }
 
-- (void) getContent
+- (void) getContent: (BOOL)forceUpdate
 {
-    CCHttpClient *client = [CCHttpClient clientWithUrl: self.url];
-    [client getJsonWithDelegate: self success: @selector(handleGetContentSuccess:) failure: nil];
+    self.forceUpdate = forceUpdate;
+    NSString *path = [[NSBundle mainBundle] pathForResource: @"source" ofType: @"html"];
+    [self.webView loadRequest: [NSURLRequest requestWithURL: [NSURL fileURLWithPath: path]]];
 }
 
-- (void) handleGetContentSuccess: (NSDictionary *)json
+- (void) webViewDidFinishLoad: (UIWebView *)webView {
+    if (!self.forceUpdate) {
+        id json = [ApiCache get: self.url];
+        if (json) {
+            [self showContent: json];
+            return;
+        }
+    }
+    NSMutableString *url = [self.url mutableCopy];
+    NSString *accessToken = [AppConfig getAccessToken];
+    if (accessToken) {
+        [url appendString: [NSString stringWithFormat: @"?access_token=%@", accessToken]];
+    }
+    CCHttpClient *client = [CCHttpClient clientWithUrl: url];
+    [client getJsonWithDelegate: nil
+                        headers: nil
+                       delegate: self
+                        success: @selector(handleGetContentSuccess:result:)
+                        failure: @selector(handleGetContentFailure:error:)];
+}
+
+- (void) handleGetContentSuccess: (NSHTTPURLResponse *) res result: (NSData *)result
+{
+    id json = [CCHttpClient responseJSON: result];
+    [self showContent: json];
+    [ApiCache set: self.url path: nil value: json];
+}
+
+- (void) handleGetContentFailure: (NSHTTPURLResponse *) res error: (NSError *)error
+{
+    [SVProgressHUD showErrorWithStatus: @"Load error, please refresh."];
+}
+
+- (void) showContent: (id)json
 {
     NSString *content = [CCBase64 decode: (NSString *)json[@"content"]];
-    NSString *language = [FileTypes get: self.name];
+    NSString *language = [FileTypes get: [self.name copy]];
     
     // Inject language, source code, and do colorize
     [self.webView stringByEvaluatingJavaScriptFromString: [NSString stringWithFormat: @"var codeEl = document.getElementById('source');"
-                                                                                       "codeEl.setAttribute('data-language', '%@');"
-                                                                                       "codeEl.innerText = '%@';"
-                                                                                       "Rainbow.color();",
-                                                                                      language,
-                                                                                      [self addSlashes: content]]];
+                                                           "codeEl.setAttribute('data-language', '%@');"
+                                                           "codeEl.innerText = '%@';"
+                                                           "Rainbow.color();",
+                                                           language,
+                                                           [self addSlashes: content]]];
 }
 
 - (NSString *) addSlashes: (NSString *)string {

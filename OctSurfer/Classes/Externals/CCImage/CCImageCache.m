@@ -190,7 +190,7 @@
                            completionHandler: ^(NSURLResponse *response, NSData *data, NSError *error) {
                                UIImage *image = [UIImage imageWithData: data];
                                if (image) {
-                                   [self storeImage:image data:data URL: url];
+                                   [self storeImage: image data: data URL: url];
                                    block(image, nil);
                                } else {
                                    block(nil, [NSError errorWithDomain: @"ImageCacheErrorDomain" code: 0 userInfo: nil]);

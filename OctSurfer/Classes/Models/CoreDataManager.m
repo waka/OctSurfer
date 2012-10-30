@@ -13,11 +13,14 @@
 @interface CoreDataManager ()
 
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong) NSManagedObjectModel *managedObjectModel;
 
 @end
 
 
 @implementation CoreDataManager
+
+static NSString * const DB_NAME = @"Model";
 
 + (CoreDataManager *) sharedManager
 {
@@ -36,70 +39,119 @@
         return self.managedObjectContext;
     }
     
-    // Create managed object model
-    NSManagedObjectModel *managedObjectModel = [NSManagedObjectModel mergedModelFromBundles: nil];
+    // Create managed object context
+    self.managedObjectContext = [[NSManagedObjectContext alloc] init];
     
+    // Set persistent store coordinator
+    [self.managedObjectContext setPersistentStoreCoordinator: [self getPersistentStoreCoordinator]];
+    
+    return self.managedObjectContext;
+}
+
+- (NSManagedObjectModel *) getManagedObjectModel
+{
+    if (self.managedObjectModel) {
+        return self.managedObjectModel;
+    }
+    
+    NSString *modelPath = [[NSBundle mainBundle] pathForResource: DB_NAME ofType: @"momd"];
+    if (modelPath) {
+        NSURL *modelURL = [NSURL fileURLWithPath: modelPath];
+        self.managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL: modelURL];
+    } else {
+        self.managedObjectModel = [NSManagedObjectModel mergedModelFromBundles: nil];
+    }
+    
+    return self.managedObjectModel;
+}
+
+- (NSPersistentStoreCoordinator *) getPersistentStoreCoordinator
+{
     // Create persistent store coordinator
     NSPersistentStoreCoordinator *persistentStoreCoordinator;
     persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
-                                  initWithManagedObjectModel: managedObjectModel];
+                                  initWithManagedObjectModel: [self getManagedObjectModel]];
     
-    // Decide saved file
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = nil;
-    if ([paths count] > 0) {
-        path = [paths objectAtIndex: 0];
-        path = [path stringByAppendingPathComponent: @"octsurfer"];
-        path = [path stringByAppendingPathComponent: @"octsurfer.db"];
-    }
-    
-    if (!path) {
-        return nil;
-    }
-    
-    NSError __autoreleasing *error;
-    
-    // Make directory
-    NSString *dirPath = [path stringByDeletingLastPathComponent];
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    if (![fileManager fileExistsAtPath:dirPath]) {
-        if (![fileManager createDirectoryAtPath: dirPath
-                    withIntermediateDirectories: YES
-                                     attributes: nil
-                                          error: &error]) {
-            NSLog(@"Failed to create directory at path %@, erro %@", dirPath, [error localizedDescription]);
-        }
-    }
-    
-    // Make store url
-    NSURL *url = [NSURL fileURLWithPath: path];
+    NSError *error;
     
     // Add persistent store
     NSPersistentStore*  persistentStore;
     persistentStore = [persistentStoreCoordinator addPersistentStoreWithType: NSSQLiteStoreType
                                                                configuration: nil
-                                                                         URL: url
+                                                                         URL: [self getStoreURL]
                                                                      options: nil
                                                                        error: &error];
+    // Check has occured error
     if (!persistentStore && error) {
         NSLog(@"Failed to create add persitent store, %@", [error localizedDescription]);
+        abort();
     }
     
-    // Create managed object context
-    self.managedObjectContext = [[NSManagedObjectContext alloc] init];
-    
-    // Set persistent store coordinator
-    [self.managedObjectContext setPersistentStoreCoordinator: persistentStoreCoordinator];
-    
-    return self.managedObjectContext;
+    return persistentStoreCoordinator;
+}
+
+- (NSURL *) getStoreURL
+{
+    NSURL *appDocumentURL = [[[NSFileManager defaultManager] URLsForDirectory: NSDocumentDirectory inDomains: NSUserDomainMask] lastObject];
+    NSURL *storeURL = [appDocumentURL URLByAppendingPathComponent: @"OctSurfer.sqlite"];
+    return storeURL;
 }
 
 - (void) save
 {
+    NSError *error;
     NSManagedObjectContext *context = [self getManagedObjectContext];
-    NSError __autoreleasing *error;
-    if (![context save: &error]) {
-        NSLog(@"Error, %@", error);
+    if (context != nil) {
+        if (![context save:&error]) {
+            NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+            abort();
+        }
+    }
+}
+
+- (BOOL) isRequiredMigration
+{
+    NSError *error;
+    
+    NSDictionary* sourceMetaData;
+    sourceMetaData = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType: NSSQLiteStoreType
+                                                                                URL: [self getStoreURL]
+                                                                              error: &error];
+    
+    if (sourceMetaData == nil) {
+        return NO;
+    } else if (error) {
+        NSLog(@"Checking migration was failed (%@, %@)", error, [error userInfo]);
+        abort();
+    }
+    
+    BOOL isCompatible = [[self getManagedObjectModel] isConfiguration: nil
+                                          compatibleWithStoreMetadata: sourceMetaData];
+    return !isCompatible;
+}
+
+- (BOOL) doMigration
+{
+    NSPersistentStoreCoordinator *persistentStoreCoordinator;
+    persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc]
+                                  initWithManagedObjectModel: [self getManagedObjectModel]];
+    
+    NSPersistentStore*  persistentStore;
+    NSError *error;
+    NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+                             [NSNumber numberWithBool:YES], NSMigratePersistentStoresAutomaticallyOption,
+                             [NSNumber numberWithBool:YES], NSInferMappingModelAutomaticallyOption, nil];
+    persistentStore = [persistentStoreCoordinator addPersistentStoreWithType: NSSQLiteStoreType
+                                                               configuration: nil
+                                                                         URL: [self getStoreURL]
+                                                                     options: options
+                                                                       error: &error];
+    // Check has occured error
+    if (!persistentStore && error) {
+        NSLog(@"Failed to create add persitent store, %@", [error localizedDescription]);
+        return NO;
+    } else {
+        return YES;
     }
 }
 
@@ -148,14 +200,14 @@
                                                                        cacheName: @"AuthEntity"];
 
     // Get from DB
-    NSError __autoreleasing *error;
+    NSError *error;
     if (![resultsController performFetch: &error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
 
     NSArray *fetchedArray = [resultsController fetchedObjects];
-    if (fetchedArray.count > 1) {
+    if (fetchedArray.count > 0) {
         AuthEntity *result = fetchedArray[0];
         return result;
     } else {
@@ -163,9 +215,10 @@
     }
 }
 
-- (void) deleteAuth
+- (void) deleteAuth: (AuthEntity *)auth
 {
-    // ToDo implemention
+    NSManagedObjectContext *context = [self getManagedObjectContext];
+    [context deleteObject: auth];
 }
 
 
@@ -188,7 +241,7 @@
     return api;
 }
 
-- (ApiEntity *) findApi: (NSString *)type name: (NSString *)name url: (NSString *)url
+- (ApiEntity *) findApiByURL: (NSString *)url
 {
     NSManagedObjectContext *context = [self getManagedObjectContext];
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
@@ -203,7 +256,7 @@
     [fetchRequest setSortDescriptors: @[sort]];
     
     // Set condition
-    NSPredicate *pred = [NSPredicate predicateWithFormat:@"type = %@ and name = %@ and url = %@", type, name, url];
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"url = %@", url];
     [fetchRequest setPredicate: pred];
     
     // Set limit
@@ -217,14 +270,14 @@
                                                                        cacheName: @"ApiEntity"];
     
     // Get from DB
-    NSError __autoreleasing *error;
+    NSError *error;
     if (![resultsController performFetch: &error]) {
         NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
         abort();
     }
     
     NSArray *fetchedArray = [resultsController fetchedObjects];
-    if (fetchedArray.count > 1) {
+    if (fetchedArray.count > 0) {
         ApiEntity *result = fetchedArray[0];
         return result;
     } else {
@@ -232,9 +285,63 @@
     }
 }
 
-- (void) deleteApi: (NSString *) type name: (NSString *)name
+- (NSArray *) findApiByPath: (NSString *)path
 {
-    // ToDo implemention
+    NSManagedObjectContext *context = [self getManagedObjectContext];
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    
+    // Set entity for getting
+    NSEntityDescription *entityDescription;
+    entityDescription = [NSEntityDescription entityForName: @"ApiEntity" inManagedObjectContext: context];
+    [fetchRequest setEntity: entityDescription];
+    
+    // Set sort descriptor
+    NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey: @"identifier" ascending: YES];
+    [fetchRequest setSortDescriptors: @[sort]];
+    
+    // Set condition
+    NSPredicate *pred = [NSPredicate predicateWithFormat:@"path = %@", path];
+    [fetchRequest setPredicate: pred];
+    
+    // Set limit
+    [fetchRequest setFetchBatchSize: 1];
+    
+    // Create fetched controller
+    NSFetchedResultsController *resultsController;
+    resultsController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest
+                                                            managedObjectContext: context
+                                                              sectionNameKeyPath: nil
+                                                                       cacheName: @"ApiEntity"];
+    
+    // Get from DB
+    NSError *error;
+    if (![resultsController performFetch: &error]) {
+        NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
+        abort();
+    }
+    
+    NSArray *fetchedArray = [resultsController fetchedObjects];
+    return fetchedArray;
+}
+
+- (void) deleteApiByURL: (NSString *)url
+{
+    ApiEntity *entity = [self findApiByURL: url];
+    if (entity) {
+        [[self getManagedObjectContext] deleteObject: entity];
+        [self save];
+    }
+}
+
+- (void) deleteApiByPath: (NSString *)path
+{
+    NSArray *entities = [self findApiByPath: path];
+    if (entities.count > 0) {
+        for (ApiEntity *entity in entities) {
+            [[self getManagedObjectContext] deleteObject: entity];
+        }
+        [self save];
+    }
 }
 
 @end

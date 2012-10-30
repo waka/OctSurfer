@@ -12,21 +12,19 @@
 @implementation ApiEntity
 
 @dynamic identifier;
-@dynamic type;
-@dynamic name;
 @dynamic url;
+@dynamic path;
 @dynamic content;
 
-- (void) setContent: (NSDictionary *)content {
-    [self willChangeValueForKey:@"setContent"];
+- (void) setContent: (id)content {
+    [self willChangeValueForKey: @"setContent"];
     
     NSData *data = [content messagePack];
     [self setPrimitiveValue: data forKey: @"content"];
-    
     [self didChangeValueForKey: @"setContent"];
 }
 
-- (NSDictionary *) content {
+- (id) content {
     NSData *data = [self primitiveValueForKey: @"content"];
     if (!data) {
         return nil;

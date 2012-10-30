@@ -31,7 +31,7 @@
     
     _logoLabel = [[UILabel alloc] initWithFrame: CGRectZero];
     _logoLabel.backgroundColor = [UIColor clearColor];
-    _logoLabel.font = [UIFont systemFontOfSize: 36.0f];
+    _logoLabel.font = [UIFont fontWithName: @"Helvetica" size: 36.0f];
     _logoLabel.textColor = [UIColor blackColor];
     _logoLabel.text = @"OctSurfer";
     _logoLabel.textAlignment = UITextAlignmentCenter;
@@ -44,7 +44,7 @@
     _messageLabel.backgroundColor = [UIColor clearColor];
     _messageLabel.font = [UIFont systemFontOfSize: 14.0f];
     _messageLabel.textColor = [UIColor grayColor];
-    _messageLabel.text = @"Log into OctSurfer with your GitHub account and get instant access to OctSurfer, including repository search, source-viewing, starred-viewing, and more!";
+    _messageLabel.text = @"Login to OctSurfer with your GitHub account and get instant access to OctSurfer, including repository search, source-viewing, starred-viewing, and more!";
     _messageLabel.numberOfLines = 0;
     
     [self addSubview: _logoLabel];

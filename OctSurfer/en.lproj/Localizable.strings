@@ -1,0 +1,38 @@
+/* 
+  Localizable.strings
+  OctSurfer
+
+  Copyright (c) 2012 yo_waka. All rights reserved.
+*/
+
+// View titles
+"TitleSearch" = "Search";
+"TitleUser" = "You";
+"TitleOrg" = "Organizations";
+"TitleFeedback" = "Feedback";
+
+// Buttons
+"ButtonStar" = "Star";
+"ButtonUnstar" = "Unstar";
+"ButtonCancel" = "Cancel";
+
+// Navigation Controller Elements
+"AAMFeedbackTitle" = "Feedback";
+"AAMFeedbackTopicsTitle" = "Topics";
+
+"AAMFeedbackButtonMail" = "Mail";
+"AAMFeedbackDescriptionPlaceholder" = "Please write for details.";
+
+// Table Headers
+"AAMFeedbackTableHeaderTopics" = "Please Fill";
+"AAMFeedbackTableHeaderBasicInfo" = "Your Environment";
+
+// Topics Options
+"AAMFeedbackTopicsQuestion" = "Question";
+"AAMFeedbackTopicsRequest" = "Request";
+"AAMFeedbackTopicsBugReport" = "Bug Report";
+"AAMFeedbackTopicsMedia" = "Media";
+"AAMFeedbackTopicsBusiness" = "Business";
+"AAMFeedbackTopicsOther" = "Other";
+
+"AAMFeedbackMailDidFinishWithError" = "Failed to send your feedback. Please try later.";

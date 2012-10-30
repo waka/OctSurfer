@@ -8,6 +8,8 @@
 #import "OAuthSecondViewController.h"
 #import "OAuthConstants.h"
 #import "OAuthLastViewController.h"
+#import "SVProgressHUD.h"
+#import "Reachability.h"
 
 
 @interface OAuthSecondViewController ()
@@ -35,7 +37,8 @@
     webView.delegate = self;
     [self.view addSubview: webView];
     
-    NSString *authorizeURL = [AUTHORIZATION_URL stringByAppendingString: [NSString stringWithFormat: @"?client_id=%@", CLIENT_ID]];
+    NSString *authorizeURL = [AUTHORIZATION_URL stringByAppendingString:
+                              [NSString stringWithFormat: @"?client_id=%@&scope=%@", CLIENT_ID, SCOPE]];
     [webView loadRequest: [NSURLRequest requestWithURL: [NSURL URLWithString: authorizeURL]]];
 }
 
@@ -47,9 +50,22 @@
  * Because we must do post request to get access token at GitHub's Oauth2.
  */
 - (BOOL) webView: (UIWebView *)webView shouldStartLoadWithRequest: (NSURLRequest *)request navigationType: (UIWebViewNavigationType)navigationType {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: YES];
+    
+    // Check network reachability
+    Reachability *hostReach = [Reachability reachabilityForInternetConnection];
+    if ([hostReach currentReachabilityStatus] == NotReachable) {
+        [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+        [SVProgressHUD showErrorWithStatus: @"Network is no available"];
+        [self.navigationController popToRootViewControllerAnimated: NO];
+        return NO;
+    }
+    
     if ([request.URL.scheme isEqualToString: CUSTOM_URL_SCHEME] && [request.URL.host isEqualToString: CALLBACK_HOST]) {
         NSString *URLString = [request.URL absoluteString];
         if ([URLString rangeOfString: @"code="].location != NSNotFound) {
+            [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+            
             // Get access token
             NSString *code = [[URLString componentsSeparatedByString: @"="] lastObject];
             
@@ -62,5 +78,15 @@
     }
     return YES;
 }
+
+- (void) webViewDidFinishLoad: (UIWebView*)webView {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+}
+
+/*- (void) webView: (UIWebView*)webView didFailLoadWithError: (NSError*)error {
+    [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible: NO];
+    [SVProgressHUD showErrorWithStatus: @"Failed to connect network"];
+    [self.navigationController popToRootViewControllerAnimated: NO];
+}*/
 
 @end

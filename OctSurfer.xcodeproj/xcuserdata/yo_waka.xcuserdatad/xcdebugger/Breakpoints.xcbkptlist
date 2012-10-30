@@ -7,13 +7,39 @@
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "OctSurfer/Classes/Externals/CCNet/CCHttpClient.m"
-         timestampString = "373211279.046048"
+         filePath = "OctSurfer/Classes/Views/UserInfoView.m"
+         timestampString = "373476611.06454"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "183"
-         endingLineNumber = "183"
-         landmarkName = "-send:delegate:success:failure:"
+         startingLineNumber = "57"
+         endingLineNumber = "57"
+         landmarkName = "-update:image:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/Controllers/SearchViewController.m"
+         timestampString = "373656091.744603"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "186"
+         endingLineNumber = "186"
+         landmarkName = "-searchBarCancelButtonClicked:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/Views/BlobTreeCell.m"
+         timestampString = "373730054.302153"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "56"
+         endingLineNumber = "56"
+         landmarkName = "-update:type:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
@@ -21,38 +47,129 @@
          ignoreCount = "0"
          continueAfterRunningActions = "No"
          filePath = "OctSurfer/Classes/Controllers/RepositoryViewController.m"
-         timestampString = "373289336.622072"
+         timestampString = "373810685.312286"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "230"
-         endingLineNumber = "230"
-         landmarkName = "-tableView:cellForRowAtIndexPath:"
+         startingLineNumber = "112"
+         endingLineNumber = "112"
+         landmarkName = "-getInfoData:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "OctSurfer/Classes/Controllers/RepositoryViewController.m"
-         timestampString = "373289336.622072"
+         filePath = "OctSurfer/Classes/Helpers/FileTypes.m"
+         timestampString = "373828428.778082"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "141"
-         endingLineNumber = "141"
-         landmarkName = "-handleGetTreeSuccess:"
+         startingLineNumber = "17"
+         endingLineNumber = "17"
+         landmarkName = "+get:"
          landmarkType = "5">
       </FileBreakpoint>
       <FileBreakpoint
          shouldBeEnabled = "No"
          ignoreCount = "0"
          continueAfterRunningActions = "No"
-         filePath = "OctSurfer/Classes/Controllers/RepositoryViewController.m"
-         timestampString = "373289336.622072"
+         filePath = "OctSurfer/Classes/Helpers/FileTypes.m"
+         timestampString = "373828483.210762"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "180"
-         endingLineNumber = "180"
-         landmarkName = "-tableView:didSelectRowAtIndexPath:"
+         startingLineNumber = "29"
+         endingLineNumber = "29"
+         landmarkName = "+get:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/Helpers/FileTypes.m"
+         timestampString = "373828519.509262"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "35"
+         endingLineNumber = "35"
+         landmarkName = "+get:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/Helpers/FileTypes.m"
+         timestampString = "373828588.993935"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "28"
+         endingLineNumber = "28"
+         landmarkName = "+get:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/Helpers/FileTypes.m"
+         timestampString = "373828716.126182"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "36"
+         endingLineNumber = "36"
+         landmarkName = "+get:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/Controllers/SourceViewController.m"
+         timestampString = "373830857.879703"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "85"
+         endingLineNumber = "85"
+         landmarkName = "-webViewDidFinishLoad:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/OAuth2/OAuthSecondViewController.m"
+         timestampString = "373913090.980958"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "75"
+         endingLineNumber = "75"
+         landmarkName = "-webView:didFailLoadWithError:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/OAuth2/OAuthSecondViewController.m"
+         timestampString = "373913179.725425"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "54"
+         endingLineNumber = "54"
+         landmarkName = "-webView:shouldStartLoadWithRequest:navigationType:"
+         landmarkType = "5">
+      </FileBreakpoint>
+      <FileBreakpoint
+         shouldBeEnabled = "No"
+         ignoreCount = "0"
+         continueAfterRunningActions = "No"
+         filePath = "OctSurfer/Classes/OAuth2/OAuthSecondViewController.m"
+         timestampString = "373913322.222342"
+         startingColumnNumber = "9223372036854775807"
+         endingColumnNumber = "9223372036854775807"
+         startingLineNumber = "71"
+         endingLineNumber = "71"
+         landmarkName = "-webViewDidFinishLoad:"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>

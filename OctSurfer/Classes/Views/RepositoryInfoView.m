@@ -65,11 +65,13 @@
 {
     self.nameLabel.text = name;
     
+    __weak RepositoryInfoView *_self = self;
     self.avatarView.image = [[CCImageCache sharedInstance] imageWithURL: imagePath
                                                            defaultImage: [UIImage imageNamed: @"gravatar-user-default.png"]
                                                                   block: ^(UIImage *image, NSError *error) {
                                                                       if (!error) {
-                                                                          self.avatarView.image = image;
+                                                                          _self.avatarView.image = image;
+                                                                          [_self setNeedsDisplay];
                                                                       }
                                                                   }];
     self.ownerLabel.text = owner;

@@ -51,8 +51,14 @@
 
 + (NSString *) getAccessToken
 {
+    NSString *accessToken = [AppConfig get: @"accessToken"];
+    if (accessToken) {
+        return accessToken;
+    }
+    
     AuthEntity *auth = [[CoreDataManager sharedManager] findAuth];
     if (auth) {
+        [AppConfig set: @"accessToken" value: auth.accessToken];
         return auth.accessToken;
     } else {
         return nil;

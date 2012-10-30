@@ -28,13 +28,17 @@
 
 - (NSManagedObjectContext *) getManagedObjectContext;
 - (void) save;
+- (BOOL) isRequiredMigration;
+- (BOOL) doMigration;
 
 - (AuthEntity *) insertNewAuth;
 - (AuthEntity *) findAuth;
-- (void) deleteAuth;
+- (void) deleteAuth: (AuthEntity *)auth;
 
 - (ApiEntity *) insertNewApi;
-- (ApiEntity *) findApi: (NSString *)type name: (NSString *)name url: (NSString *)url;
-- (void) deleteApi: (NSString *) type name: (NSString *)name;
+- (ApiEntity *) findApiByURL: (NSString *)url;
+- (NSArray *) findApiByPath: (NSString *)path;
+- (void) deleteApiByURL: (NSString *)url;
+- (void) deleteApiByPath: (NSString *)path;
 
 @end
