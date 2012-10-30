@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="./css/main.css" />
+    <link rel="stylesheet" href="./js/rainbow/themes/obsidian.css" />
+  </head>
+  <body>
+    <div class="block">
+      <pre><code id="source" data-language="javascript">(function() {
+    var hoge = document.getElementById('hoge');
+    window.addEventListener(hoge, 'mousedown', function() {
+        alert('hoge');
+    }, false);
+ })();</code></pre>
+    </div>
+    <script type="text/javascript" src="./js/rainbow/rainbow.min.js"></script>
+    <script type="text/javascript" src="./js/rainbow/rainbow.linenumbers.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/c.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/coffeescript.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/csharp.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/css.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/generic.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/html.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/java.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/javascript.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/lua.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/php.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/python.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/ruby.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/scheme.js"></script>
+    <script type="text/javascript" src="./js/rainbow/language/shell.js"></script>
+
+    <script>
+      window.onload = function() {
+        Rainbow.color();
+      };
+    </script>
+  </body>
+</html

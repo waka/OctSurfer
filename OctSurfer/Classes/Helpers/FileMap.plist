@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>javascript</key>
+	<array>
+		<string>.js</string>
+	</array>
+	<key>coffeescript</key>
+	<array>
+		<string>.coffee</string>
+	</array>
+	<key>css</key>
+	<array>
+		<string>.css</string>
+	</array>
+	<key>html</key>
+	<array>
+		<string>.html</string>
+		<string>.htm</string>
+	</array>
+	<key>java</key>
+	<array>
+		<string>.java</string>
+		<string>.class</string>
+	</array>
+	<key>sql</key>
+	<array>
+		<string>.sql</string>
+	</array>
+	<key>php</key>
+	<array>
+		<string>.php</string>
+	</array>
+	<key>perl</key>
+	<array>
+		<string>.psgi</string>
+		<string>.pl</string>
+		<string>.pm</string>
+	</array>
+	<key>python</key>
+	<array>
+		<string>.py</string>
+	</array>
+	<key>ruby</key>
+	<array>
+		<string>.rb</string>
+		<string>Gemfile</string>
+		<string>Rakefile</string>
+	</array>
+	<key>shell</key>
+	<array>
+		<string>.sh</string>
+	</array>
+	<key>c</key>
+	<array>
+		<string>.cpp</string>
+		<string>.c</string>
+	</array>
+	<key>csharp</key>
+	<array>
+		<string>.csharp</string>
+	</array>
+</dict>
+</plist>
