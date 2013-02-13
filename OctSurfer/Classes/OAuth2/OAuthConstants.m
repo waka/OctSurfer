@@ -11,8 +11,8 @@
 
 NSString *AUTHORIZATION_URL = @"https://github.com/login/oauth/authorize";
 NSString *ACCESS_TOKEN_URL  = @"https://github.com/login/oauth/access_token";
-NSString *CLIENT_ID         = @"41ae81cfa9970b917d75";
-NSString *CLIENT_SECRET     = @"6c12ea4f83e93ff837bd593020c62ad3aa0141ec";
+NSString *CLIENT_ID         = @"<HERE_IS_CLIENT_ID>";
+NSString *CLIENT_SECRET     = @"<HERE_IS_CLIENT_SECRET>";
 NSString *SCOPE             = @"user,repo";
 NSString *CUSTOM_URL_SCHEME = @"octsurfer";
 NSString *CALLBACK_HOST     = @"oauth2";

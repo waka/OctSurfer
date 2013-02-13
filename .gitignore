@@ -3,7 +3,6 @@ OctSurfer/Classes/Externals/AAMFeedback/*
 OctSurfer/Classes/Externals/MessagePack/*
 OctSurfer/Classes/Externals/Reachability/*
 OctSurfer/Classes/Externals/SVProgressHUD/*
-OctSurfer/HTML/js/rainbow/*
 
 # Mac
 .DS_Store
